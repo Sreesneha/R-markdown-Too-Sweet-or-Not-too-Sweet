@@ -1,0 +1,131 @@
+---
+title: "Too Sweet or not too Sweet"
+subtitle:  "by Sreesneha Sudarsan"  # only for html output
+date:  "`r Sys.Date()`"
+output:
+  tufte::tufte_html: default
+bibliography: skeleton.bib
+link-citations: yes
+---
+
+```{r setup, include=FALSE}
+library(tufte)
+# invalidate cache when the tufte version changes
+knitr::opts_chunk$set(cache.extra = packageVersion('tufte'))
+options(htmltools.dir.version = FALSE)
+```
+
+# Introduction
+
+The data set used for this visualization has been produced from Kaggle.com.
+
+https://www.kaggle.com/vijayashreer/food-preferences 
+
+`r newthought('The data set I chose')` has 288 rows and 8 columns. These 8 columns are timestamp, participant_ID, gender, nationality, age, cuisine, juice and dessert. In nationality, roughly 80% of the people who participated were **Indian**. The options for cuisine were **Traditional food** and **Western food**. The options within dessert were **Maybe**, **Yes** and **No**.
+
+```{r}
+food <- read.csv("Food_Preference_Sneha.csv")
+str(food)
+```
+
+`r newthought('I started with this data set')` to understand an important point. What is the preference of food types between different ages? How does preference of dessert change between ages and even with gender? Do Indian people prefer traditional or western cuisine more? This data set consisting of 288 rows and 8 columns, was used to answer these questions.
+
+# The Plots
+
+I made 4 plots based on the questions I was interested in. These were
+
+1. What is the preference of cuisine between different ages?
+2. Do Indians prefer traditional or western food?
+3. What is the preference of dessert between different ages?
+4. What is the preference of dessert between different genders?
+
+
+## The First plot (cuisine vs age)
+
+```{r}
+food_names <- c("timestamp", "participant_ID", "gender", "nationality", "age", "cuisine", "juice", "dessert")
+
+colnames(food) <- food_names
+
+library(ggplot2)
+
+g <- ggplot(data=food,
+            aes(x=cuisine, y=age))
+
+g+geom_bin2d()+
+  scale_fill_gradient(low="lightblue", high="darkblue", trans="log10")+
+  theme(text=element_text(family='Arial Black'))
+```
+
+`r newthought('The options for cuisine were between')` traditional food and western food. As you can see with this data set, traditional food is the more opted option for people rather than western food. An interesting transition occurs just before the age of **20**, where people start to prefer western food over traditional. However, after hitting the age of **20**, a majority of people start to prefer traditional. In fact, between the ages of **20-40**, almost all people prefer traditional over western, as seen with the count. After the age of **40**, people strongly prefer traditional food. 
+
+
+## The Second plot(cuisine vs gender)
+
+```{r results=FALSE, message=FALSE}
+na.omit(food)
+
+library(dplyr)
+
+main_nationality <- filter(food)
+main_nationality_value <- c("Indian")
+main_nationality <- filter(main_nationality,
+                       nationality %in% main_nationality_value)
+
+main_nationality_smry <- group_by(main_nationality, 
+                              nationality)
+
+g <- ggplot(data=main_nationality_smry,
+            aes(x=cuisine, fill=gender))
+
+g+geom_bar()+
+   scale_fill_manual(values=c("Female"="cadetblue", "Male"="lightslategray"," "="coral"))+
+  theme(text=element_text(family='Arial Black'))
+```
+
+`r newthought('When we look at')` traditional food vs western food when it comes to gender, females tend to prefer traditional food more than males. However, the division of genders when it comes to western food is close to equal and an equal percentage of each gender prefer western food. As this graph was narrowed down to Indian nationality, we can see that Indians prefer traditional food more than western food. 
+
+## The Third plot(dessert vs age)
+
+```{r}
+g <- ggplot(data=food,
+            aes(x=dessert, y=age))
+
+g+geom_bin2d()+
+  scale_fill_gradient(low="lightgreen", high="darkgreen", trans="log10")+
+  theme(text=element_text(family='Arial Black'))
+```
+
+`r newthought('When we look at')` age vs dessert, the options that people can choose between are **Maybe**, **Yes** and **No**. The most predominantly chosen option is **Maybe** while **Yes** is the average consensus amongst all the age groups. Most older age groups lean towards the **Yes** and **Maybe** options except for a few exceptions. People between the ages of 20-40 are more likely to say yes to a dessert rather than no. However, the amount of people who say **No** to a dessert start to rise just before the ages of 40.
+
+## The Fourth Plot(dessert vs gender)
+
+```{r}
+g <- ggplot(data=food,
+            aes(x=dessert, fill=gender ))
+
+g+geom_bar()+
+  scale_fill_manual(values=c("Female"="cadetblue", "Male"="lightslategray"," "="coral"))+
+  theme(text=element_text(family='Arial Black'))
+```
+
+`r newthought('When we observe this graph')`, we see females are more likely to say **Maybe** or **No** to a dessert rather than yes. Males on the other hand however, prefer to say either **Yes** or **Maybe** than no to a dessert option. From this graph we can clearly see people prefer to say maybe to the option of dessert, followed by saying yes to a dessert and then no. 
+
+# Conclusion
+
+`r newthought('A lot of interesting conclusions')` were brought forward by these visualizations. The first one being that traditional food is what most people prefer over western food. Below the ages of 20, people prefer western food but when they hit the age of 20, they bounce back to traditional food. After the ages of 40, traditional food is a solidified option.
+
+Another conclusion we were able to see with these graphs is that females prefer traditional food more than males do. Females also prefer to ponder over choosing dessert or completely excluding it compared to males who are more likely to say yes to a dessert. 
+
+People also prefer to say maybe to the option of a dessert rather than saying yes. This changes with age however, when people beyond the age of 50 either prefer to say No or Yes to the option of a dessert. People between the ages of 20-40 also say maybe to the option of a dessert more than concluding their choice as Yes or No. 
+
+Some of the challenges I faced, was deciding the format for showcasing my information. Since the information was text based, it did not allow for quantitative analysis. Hence, I had to use the only qualitative variable, which was age, to act as the y axis for most of my graphs. I also had to choose between a geom_bin2d and a geom_histogram for representing one of my plots, but after getting opinions from my classmates, I decided to stick with the geom_bin2d graph. 
+
+Overall, this data set tells us that preference of people are quite variable. When it comes to choosing something sweet, people prefer to think about it. When it comes to choice of cuisine however, people are solid in their choice of traditional. 
+
+
+
+
+
+
+
